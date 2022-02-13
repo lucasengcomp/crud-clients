@@ -30,4 +30,21 @@ public class ClientService {
         Page<Client> clients = repostory.findAll(pageRequest);
         return clients.map(x -> new ClientDTO(x));
     }
+
+    @Transactional
+    public ClientDTO insert(ClientDTO dto) {
+        Client client = handleObjectClient(dto);
+        client = repostory.save(client);
+        return new ClientDTO(client);
+    }
+
+    private Client handleObjectClient(ClientDTO dto) {
+        Client client = new Client();
+        client.setName(dto.getName());
+        client.setBirthDate(dto.getBirthDate());
+        client.setChildren(dto.getChildren());
+        client.setCpf(dto.getCpf());
+        client.setIncome(dto.getIncome());
+        return client;
+    }
 }
