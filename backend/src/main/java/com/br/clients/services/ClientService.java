@@ -5,7 +5,10 @@ import com.br.clients.entities.Client;
 import com.br.clients.repositories.ClientRepostory;
 import com.br.clients.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,9 +18,16 @@ public class ClientService {
     @Autowired
     private ClientRepostory repostory;
 
+    @Transactional(readOnly = true)
     public ClientDTO findById(Long id) {
         Optional<Client> client = repostory.findById(id);
         Client entity = client.orElseThrow(() -> new ResourceNotFoundException("Entity not found!"));
         return new ClientDTO(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ClientDTO> findAllPaged(PageRequest pageRequest) {
+        Page<Client> clients = repostory.findAll(pageRequest);
+        return clients.map(x -> new ClientDTO(x));
     }
 }
