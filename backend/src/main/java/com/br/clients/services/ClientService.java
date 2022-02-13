@@ -3,8 +3,11 @@ package com.br.clients.services;
 import com.br.clients.dto.ClientDTO;
 import com.br.clients.entities.Client;
 import com.br.clients.repositories.ClientRepostory;
+import com.br.clients.services.exceptions.DataBaseException;
 import com.br.clients.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -49,6 +52,16 @@ public class ClientService {
             return new ClientDTO(client);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Entity not found for this id: " + id);
+        }
+    }
+
+    public void delete(Long id) {
+        try {
+            repostory.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResourceNotFoundException("Id "+ id + " not found");
+        } catch(DataIntegrityViolationException e) {
+            throw new DataBaseException("Integrity violation");
         }
     }
 
